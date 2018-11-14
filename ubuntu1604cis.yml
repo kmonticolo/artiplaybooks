@@ -1,0 +1,4 @@
+- hosts: all
+  become: yes
+  roles:
+    - florianutz.ubuntu1604-cis

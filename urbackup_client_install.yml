@@ -1,0 +1,215 @@
+---
+# ^^^ YAML documents must begin with the document separator "---"
+#
+#### Install and compile the latest urbackup client for headless systems
+#
+# Overview: Compiles urBackup client
+# Applies to: production
+# Description: 
+#   Ensures that a host is configured for management with Ansible.
+# 
+###########
+#
+#
+# Note:
+# YAML, like Python, cares about whitespace.  Indent consistently throughout.
+# Be aware! Unlike Python, YAML refuses to allow the tab character for
+# indentation, so always use spaces.
+#
+# Two-space indents feel comfortable to me, but do whatever you like.
+# vim:ff=unix ts=2 sw=2 ai expandtab
+#
+# If you're new to YAML, keep in mind that YAML documents, like XML
+# documents, represent a tree-like structure of nodes and text. More
+# familiar with JSON?  Think of YAML as a strict and more flexible JSON
+# with fewer significant characters (e.g., :, "", {}, [])
+#
+# The curious may read more about YAML at:
+# http://www.yaml.org/spec/1.2/spec.html
+#
+
+### 
+# Notice the minus on the line below -- this starts the playbook's record
+# in the YAML document. Only one playbook is allowed per YAML file.  Indent
+# the body of the playbook.
+-
+
+  hosts: all
+  ###########
+  # Playbook attribute: hosts
+  # Required: yes
+  # Description:
+  #   The name of a host or group of hosts that this playbook should apply to.
+  #
+  ## Example values:
+  #   hosts: all -- applies to all hosts
+  #   hosts: hostname -- apply ONLY to the host 'hostname'
+  #   hosts: groupname -- apply to all hosts in groupname
+  #   hosts: group1,group2 -- apply to hosts in group1 & group2
+  #   hosts: group1,host1 -- mix and match hosts
+  #   hosts: *.mars.nasa.gov wildcard matches work as expected
+  #
+  ## Using a variable value for 'hosts'
+  #
+  # You can, in fact, set hosts to a variable, for example:
+  #
+  #   hosts: $groups -- apply to all hosts specified in the variable $groups
+  #
+  # This is handy for testing playbooks, running the same playbook against a
+  # staging environment before running it against production, occasional
+  # maintenance tasks, and other cases where you want to run the playbook
+  # against just a few systems rather than a whole group.
+  #
+  # If you set hosts as shown above, then you can specify which hosts to
+  # apply the playbook to on each run as so:
+  #
+  #   ansible-playbook playbook.yml --extra-vars="groups=staging"
+  #
+  # Use --extra-vars to set $groups to any combination of groups, hostnames,
+  # or wildcards just like the examples in the previous section.
+  #
+
+  become: True
+  ###########
+  # Playbook attribute: sudo
+  # Default: False
+  # Required: no
+  # Description:
+  #   If True, always use sudo to run this playbook, just like passing the
+  #   --sudo (or -s) flag to ansible or ansible-playbook.  
+
+  #user: remoteuser
+  ###########
+  # Playbook attribute:  user
+  # Default: "root'
+  # Required: no
+  # Description
+  #   Remote user to execute the playbook as
+
+  ###########
+  # Playbook attribute: vars
+  # Default: none
+  # Required: no
+  # Description:
+  #  Set configuration variables passed to templates & included playbooks
+  #  and handlers.  See below for examples.
+  vars:
+    urbackupclient_cmd: '/usr/local/sbin/urbackupclientbackend -d'
+    urbackup_root_path: '/opt/urbackup'
+    download_path: '{{ urbackup_root_path }}/urbackup-client-archive-{{ urbackup_client_version }}.tar.gz'
+    extract_path: '{{ urbackup_root_path }}/urbackup-client-{{ urbackup_client_version }}'
+
+
+  ##########
+  # Playbook attribute: vars_prompt
+  # Required: no
+  # Description:
+  #   A list of variables that must be manually input each time this playbook
+  #   runs.  Used for sensitive data and also things like release numbers that
+  #   vary on each deployment.  Ansible always prompts for this value, even
+  #   if it's passed in through the inventory or --extra-vars.
+  #
+  #   The input won't be echoed back to the terminal.  Ansible will always
+  #   prompt for the variables in vars_prompt, even if they're passed in via
+  #   --extra-vars or group variables.
+  #
+  #   TODO: I think that the value is supposed to show as a prompt but this
+  #   doesn't work in the latest devel
+  #
+  vars_prompt:
+    - name: "url"
+      prompt: "Please enter the UrBackup Client URL"
+    - name: "urbackup_client_version"
+      prompt: "Please enter the UrBackup version"
+
+  ##########
+  # Playbook attribute: tasks
+  # Required: yes
+  # Description:
+  # A list of tasks to perform in this playbook.
+  tasks:
+    ##########
+    # The simplest task
+    # Each task must have a name & action.
+    - name: Check that the server's alive
+      action: ping
+
+    ##########
+    # install required packges
+    # the package names have been tested for ubuntu
+    - name: Install dependencies
+      #action: {{ ansible_pkg_mgr }} name="{{ item }}" state=present update_cache=yes
+      #apt: pkg="{{ item }}" state=present update_cache=yes 
+      package: name="{{ item }}" state=present update_cache=yes
+      with_items:
+        - libcrypto++-dev
+        - g++
+        - build-essential
+        - curl
+        - checkinstall 
+    
+    ##########
+    # Kill existing urbackup client
+    - name: Kill running urbackup client
+      shell: pkill -f urbackupclientbackend
+      ignore_errors: True
+    
+    ##########
+    # Create urbackup directory
+    - name: Create directories
+      file: path={{ item }} state=directory
+      with_items:
+        - "{{ urbackup_root_path }}"
+      #  - "{{ extract_path }}"
+
+    ##########
+    # Download and extract archive
+    - name: Download and extract URBACKUP source
+      unarchive: src={{ url }} dest={{ urbackup_root_path }} copy=no
+    
+    ##########
+    # Build urbackup
+    - name: Build UrBackup
+      shell: "{{ item }}"
+      args:
+        chdir: "{{ extract_path }}"
+      with_items:
+        - ./configure --enable-headless
+        - make
+        - checkinstall -y --pkgname="urbackup-client" --nodoc --pkgversion={{ urbackup_client_version }}
+      notify: Start UrBackup
+ 
+    ##########
+    # add startup entry to rc.local
+    - name: update rc.local
+      blockinfile:
+        dest: /etc/rc.local
+        marker: "### <!-- {mark} ANSIBLE MANAGED BLOCK -->"
+        insertbefore: "exit 0"
+        content: |
+          {{ urbackupclient_cmd }}         
+
+  ##########
+  # Playbook attribute: handlers
+  # Required: no
+  # Description:
+  #   Handlers are tasks that run when another task has changed something.
+  #   See above for examples.  The format is exactly the same as for tasks.
+  #   Note that if multiple tasks notify the same handler in a playbook run
+  #   that handler will only run once.
+  #
+  #   Handlers are referred to by name. They will be run in the order declared
+  #   in the playbook.  For example: if a task were to notify the
+  #   handlers in reverse order like so:
+  #
+  #   - task: touch a file
+  #     action: file name=/tmp/lock.txt
+  #     notify:
+  #     - Restart application
+  #     - Restart nginx
+  #
+  #   The "Restart nginx" handler will still run before the "Restart
+  #   application" handler because it is declared first in this playbook.
+  handlers:
+    - name: Start UrBackup
+      shell: "{{ urbackupclient_cmd }}"

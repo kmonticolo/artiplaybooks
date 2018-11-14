@@ -1,0 +1,6 @@
+---
+- hosts: novelpay
+#- hosts: virt
+  become: yes
+  roles:
+     - { role: nickjj.fail2ban, sudo: true }

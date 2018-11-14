@@ -1,0 +1,16 @@
+---
+
+- hosts: ubuntu, novelpayubuntu
+#- hosts: all
+  become: yes
+  gather_facts: no
+  tasks:
+
+    - name: setup
+      setup: filter=ansible_os_family
+    - name: is reboot needed
+      stat:
+        path: /var/run/reboot-required
+      register: reboot 
+      changed_when: reboot.stat.exists == True
+      when: ansible_os_family == 'Debian'

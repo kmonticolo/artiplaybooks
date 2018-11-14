@@ -1,0 +1,7 @@
+---
+- hosts: all
+  become: yes
+  vars: 
+    zabbix_agent_server: 127.0.0.1,miki.artifact.pl,164.132.63.48
+  roles:
+     - { role: dj-wasabi.zabbix-agent}

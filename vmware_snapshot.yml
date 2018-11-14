@@ -1,0 +1,21 @@
+ 
+---
+
+#- hosts: vmhostnovelpay
+- hosts: localhost
+  gather_facts: no
+  tasks:
+
+    - name: Create a snapshot
+      vmware_guest_snapshot:
+        hostname: 176.31.124.186
+        username: root
+        password: novelpay2015
+        validate_certs: no 
+        datacenter: datacenter_name
+        folder: /alpha
+        name: alpha
+        state: present
+        snapshot_name: kamilm1311
+        description: "13 listopada"
+      delegate_to: localhost

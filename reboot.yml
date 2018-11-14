@@ -1,0 +1,34 @@
+---
+
+#- hosts: all
+- hosts: ubuntu
+  become: yes
+  serial: 1
+  gather_facts: no
+  tasks:
+
+    - name: setup
+      setup: filter=ansible_os_family
+    - name: is reboot needed
+      stat:
+        path: /var/run/reboot-required
+      register: reboot 
+      changed_when: reboot.stat.exists == True
+      when: ansible_os_family == 'Debian'
+
+    - name: Reboot immediately if there was a change.
+      #serial: 1
+      shell: "sleep 3 && reboot"
+      async: 1
+      poll: 0
+      #shell: "ls"
+      when: reboot is changed
+
+    - name: Wait for the reboot to complete if there was a change.
+      wait_for_connection:
+        connect_timeout: 20
+        sleep: 5
+        delay: 5
+        timeout: 600
+      when: reboot is changed
+

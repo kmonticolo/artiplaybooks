@@ -1,6 +1,12 @@
 ---
+# install
 - hosts: all
-#- hosts: virt
+  become: yes
+  roles:
+     - robertdebock.fail2ban
+
+# configure
+- hosts: all
   become: yes
   vars:
     ignoreip:

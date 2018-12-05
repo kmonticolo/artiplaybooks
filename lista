@@ -1,7 +1,0 @@
-alpha
-
-alpha.novelpay.pl          : ok=4    changed=1    unreachable=0    failed=1
-diament.artifact.pl        : ok=4    changed=1    unreachable=0    failed=1
-draco.artifact.pl          : ok=4    changed=1    unreachable=0    failed=1
-hydra.artifact.pl          : ok=4    changed=1    unreachable=0    failed=1
-lynx.artifact.pl           : ok=4    changed=1    unreachable=0    failed=1

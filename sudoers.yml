@@ -6,4 +6,4 @@
     path: /etc/sudoers
     state: present
     #regexp: '^%wheel\s'
-    line: 'kamil ALL=(ALL) NOPASSWD: ALL'
+    line: 'kamilm ALL=(ALL) NOPASSWD: ALL'

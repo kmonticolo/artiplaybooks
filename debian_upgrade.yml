@@ -1,7 +1,7 @@
 ---
 
 #- hosts: novelpayubuntu
-- hosts: ubuntu, novelpayubuntu
+- hosts: artifactubuntu, novelpayubuntu
   become: yes
   tasks:
     - name: Update packages list

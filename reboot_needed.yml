@@ -13,4 +13,5 @@
         path: /var/run/reboot-required
       register: reboot 
       changed_when: reboot.stat.exists == True
+      failed_when: reboot.stat.exists == True
       when: ansible_os_family == 'Debian'

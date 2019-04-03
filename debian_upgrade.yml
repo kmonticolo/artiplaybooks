@@ -14,6 +14,10 @@
         state: latest
       when: ansible_os_family == 'Debian'
 
+    - name: Autoremove packages
+      apt: autoremove=yes
+      when: ansible_os_family == 'Debian'
+
     - name: List packages to upgrade (1/2)
       shell: aptitude -q -F%p --disable-columns search "~U"
       register: updates

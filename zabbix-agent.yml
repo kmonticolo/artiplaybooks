@@ -6,4 +6,5 @@
     sign_keys: 34
     zabbix_version: 3.4
   roles:
-     - { role: dj-wasabi.zabbix-agent}
+     #- { role: dj-wasabi.zabbix-agent}
+     - { role: /home/kmonti/ansible-zabbix-agent }

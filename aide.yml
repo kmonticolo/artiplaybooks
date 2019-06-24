@@ -149,6 +149,12 @@
            - "/var/log/lastlog"
            - "/opt/apache-activemq-5.9.1/data/kahadb/db.data" # amq
            - "/opt/apache-activemq-5.9.1/data/kahadb/db.redo" # amq
+           # wf
+           - "/opt/ntms/data/p/stored_files"
+           - "/opt/ntms/data/t/appVersions/*"
+           - "/opt/ntms/data/t/appVersions/*"
+           - "/opt/ntms/data/t/appVersionsTmp"
+           - "/opt/wildfly-15.0.0.Final/standalone/tmp/*"
 
   roles:
     - ahuffman.aide

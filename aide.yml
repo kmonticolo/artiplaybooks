@@ -1,12 +1,27 @@
 - hosts: all
   become: yes
   vars:
-  #aide_cron_sched_hr: 12
+    #aide_cron_sched_hr: 12
     aide_cron_schedule_check: false # we run job from jenkins
+    aide_verbose: 3
+
     aide_rules:
+
+      - name: "FIPSR"
+        rule: "FIPSR"
+        attributes: [p+i+n+u+g+s+m+c+acl+selinux+xattrs+sha256]
+
+      - name: "ALLXTRAHASHES"
+        rule: "ALLXTRAHASHES"
+        attributes: [sha1+rmd160+sha256+sha512+tiger]
+
+      - name: "EVERYTHING"
+        rule: "EVERYTHING"
+        attributes: [R+ALLXTRAHASHES]
 
       - name: "define include path"
         rule: "NORMAL"
+        attributes: [FIPSR+sha512]
         paths:
            - "/boot"
            - "/bin"
@@ -18,6 +33,7 @@
            - "/root"
            - "/etc/exports"
            - "/etc/fstab"
+           - "/etc/aide.conf"
            - "/etc/passwd"
            - "/etc/group"
            - "/etc/gshadow"
@@ -48,11 +64,13 @@
 
       - name: "perms"
         rule: "PERMS"
+        attributes: [p+i+u+g+acl+selinux]
         paths:
            - "/etc"
 
       - name: "lspp"
         rule: "LSPP"
+        attributes: [FIPSR+sha512]
         paths:
            - "/etc/audit/"
            - "/etc/libaudit.conf"
@@ -95,5 +113,43 @@
            - "/etc/issue.net"
            - "/etc/cups"
 
-    roles:
-      - ahuffman.aide
+      - name: "dataonly"
+        rule: "DATAONLY"
+        attributes: [p+n+u+g+s+acl+selinux+xattrs+sha256]
+        paths:
+           - "/etc/resolv.conf"
+
+      - name: "log"
+        rule: "LOG"
+        attributes: [p+u+g+i+n+S+acl+selinux+xattrs]
+        paths:
+           - "/root/.bash_history"
+           - "/var/log"
+           - "/var/run/utmp"
+           - "/var/log/lastlog"
+           - "/var/log/auth.log*"
+           - "/var/log/kern.log*"
+           - "/var/log/syslog*"
+           - "/opt/apache-activemq-5.9.1/data/activemq.log*"   # amq
+           - "/opt/apache-activemq-5.9.1/data/kahadb/db-5.log*" # amq
+           - "/var/log/nginx/access*" # front
+           - "/var/log/nginx/error*" # front
+           - "/var/log/nginx/ntms_access.log*" # front
+           - "/var/log/nginx/ntms_error*" # front
+           - "/var/log/nginx/ntms_term_access*" # front
+           - "/var/log/nginx/ntms_term_error*" # front
+           - "/opt/ntms/logs/ntms.log*" # wildfly
+           - "/opt/ntms/logs/sql.log*" # wildfly
+           - "/var/log/postgresql/postgresql-10-main.log*" # postgresql
+
+      - name: "exclude"
+        rule: "negative"
+        paths:
+           - "/root/.viminfo"
+           - "/var/log/lastlog"
+           - "/opt/apache-activemq-5.9.1/data/kahadb/db.data" # amq
+           - "/opt/apache-activemq-5.9.1/data/kahadb/db.redo" # amq
+
+  roles:
+    - ahuffman.aide
+

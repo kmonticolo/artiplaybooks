@@ -1,4 +1,34 @@
 - hosts: all
   become: yes
+  vars:
+    #aide_cron_sched_hr: 12
+    aide_cron_schedule_check: false # we run job from jenkins
+    aide_rules:   
+      - name: "wyl logi"
+        rule: "negative"
+        paths:                  # gather: aide -C -c /etc/aide.conf |grep File|sed 's/\..*$//g'|sort -u and append "*"
+# common
+           - "/var/log/lastlog*"
+           - "/var/log/auth.log*"
+           - "/var/log/syslog*"
+           - "/var/log/kern.log*"
+# front
+           - "/var/log/nginx/access*"
+           - "/var/log/nginx/error*"
+           - "/var/log/nginx/ntms_access.log*"
+           - "/var/log/nginx/ntms_error*"
+           - "/var/log/nginx/ntms_term_access*"
+           - "/var/log/nginx/ntms_term_error*"
+# amq
+           - "/opt/apache-activemq-5.9.1/*"
+           - "/opt/apache-activemq-5.9.1/data/activemq.log*"
+           - "/opt/apache-activemq-5.9.1/data/kahadb/db-5.log"
+           - "/opt/apache-activemq-5.9.1/data/kahadb/db.data"
+           - "/opt/apache-activemq-5.9.1/data/kahadb/db.redo"
+# wildfly
+           - "/opt/ntms/logs/ntms.log*"
+           - "/opt/ntms/logs/sql.log*"
+# db
+           - "/var/log/postgresql/postgresql-10-main.log*"
   roles:
     - ahuffman.aide

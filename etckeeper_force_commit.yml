@@ -1,7 +1,7 @@
 ---
 
-#- hosts: artifactubuntu, novelpayubuntu
-- hosts: ubuntu
+- hosts: artifactubuntu, novelpayubuntu
+#- hosts: all
   become: yes
   gather_facts: no
   tasks:
@@ -13,8 +13,8 @@
 
     - name: etckeeper add files
       shell: etckeeper vcs add .
-      when: etckeeper.stdout.find("Untracked") != -1
+#      when: etckeeper.stdout.find("Untracked") != -1
 
     - name: commit etckeeper
       shell: etckeeper vcs commit -am "commit changes by ansible"
-      when: not "'clean' in etckeeper.stdout"
+#             when: not "'clean' in etckeeper.stdout"

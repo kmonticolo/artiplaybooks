@@ -9,6 +9,9 @@
       shell: nice aide -C -c /etc/aide.conf
       register: out
       failed_when: out.rc == 4 or out.rc == 5 or out.rc == 6 or out.rc == 7
+    - name: debug
+      debug:
+        msg: "{{ out.stdout.split('\n') }}"
 # out.rc = 4 when  Added entries: = 0 and Removed entries: = 0 , changed > 0
 # out.rc = 5 when  Added entries: > 0 and Removed entries: = 0, changed > 0
 # out.rc = 6 when  Added entries: = 0 and Removed entries: > 0, changed > 0

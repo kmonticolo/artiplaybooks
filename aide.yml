@@ -140,6 +140,7 @@
            - "/var/log/nginx/ntms_term_error.*" # front
            - "/opt/ntms/logs/ntms.log.*" # wildfly
            - "/opt/ntms/logs/sql.log.*" # wildfly
+           - "/opt/wildfly-15.0.0.Final/standalone/log/*"
            - "/var/log/postgresql/postgresql-10-main.log.*" # postgresql
 
       - name: "exclude"

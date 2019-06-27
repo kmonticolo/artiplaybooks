@@ -132,14 +132,10 @@
            - "/var/log/syslog.*"
            - "/opt/apache-activemq-5.9.1/data/activemq.log.*"   # amq
            - "/opt/apache-activemq-5.9.1/data/kahadb/db-5.log.*" # amq
-           - "/var/log/nginx/access.*" # front
-           - "/var/log/nginx/error.*" # front
-           - "/var/log/nginx/ntms_access.log.*" # front
-           - "/var/log/nginx/ntms_error.*" # front
-           - "/var/log/nginx/ntms_term_access.*" # front
-           - "/var/log/nginx/ntms_term_error.*" # front
            - "/opt/ntms/logs/ntms.log.*" # wildfly
-           - "/opt/ntms/logs/sql.log.*" # wildfly
+           - "/opt/ntms/logs/sql.log" # wildfly
+           - "/opt/ntms/logs"
+
            - "/opt/wildfly-15.0.0.Final/standalone/log/*"
            - "/var/log/postgresql/postgresql-10-main.log.*" # postgresql
 
@@ -157,6 +153,14 @@
            - "/opt/ntms/data/t/appVersions/*"
            - "/opt/ntms/data/t/appVersionsTmp"
            - "/opt/wildfly-15.0.0.Final/standalone/tmp/*"
+           - "/opt/ntms/data/t/parameterTmp/*"
+           - "/var/log/nginx/.*" # front
+           - "/var/log/nginx/access.*" # front
+           - "/var/log/nginx/error.*" # front
+           - "/var/log/nginx/ntms_access.log.*" # front
+           - "/var/log/nginx/ntms_error.*" # front
+           - "/var/log/nginx/ntms_term_access.*" # front
+           - "/var/log/nginx/ntms_term_error.*" # front
 
   roles:
     - kmonticolo.ansible_aide

@@ -4,6 +4,9 @@
 #- hosts: all
   become: yes
   gather_facts: no
+  vars:
+    git_user: kamilm
+    git_mail: kamilm@localhost
   tasks:
 
     - name: check etckeeper
@@ -11,10 +14,23 @@
       changed_when: no
       register: etckeeper
 
+    - name: etckeeper check config 
+      shell: etckeeper vcs config --list
+      changed_when: no
+      register: config
+
+    - name: git config mail
+      shell: etckeeper vcs config --global user.email "{{ git_mail }}"
+      when: not "{{ git_mail }} in config.stdout"
+
+    - name: git config user
+      shell: etckeeper vcs config --global user.name "{{ git_user }}"
+      when: not "{{ git_user }} in config.stdout"
+
     - name: etckeeper add files
       shell: etckeeper vcs add .
-#      when: etckeeper.stdout.find("Untracked") != -1
+      when: etckeeper.stdout.find("Untracked") != -1
 
     - name: commit etckeeper
       shell: etckeeper vcs commit -am "commit changes by ansible"
-#             when: not "'clean' in etckeeper.stdout"
+      when: not "'clean' in etckeeper.stdout"

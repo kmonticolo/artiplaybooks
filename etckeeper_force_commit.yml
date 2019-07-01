@@ -10,27 +10,30 @@
   tasks:
 
     - name: check etckeeper
-      shell: etckeeper vcs status
+      command: etckeeper vcs status
       changed_when: no
       register: etckeeper
+    #- debug: msg="{{ etckeeper.stdout }}"
+    #- debug: msg="{{ etckeeper.stderr }}"
 
     - name: etckeeper check config 
-      shell: etckeeper vcs config --list
+      command: etckeeper vcs config --list
       changed_when: no
       register: config
 
     - name: git config mail
-      shell: etckeeper vcs config --global user.email "{{ git_mail }}"
-      when: not "{{ git_mail }} in config.stdout"
+      command: etckeeper vcs config --global user.email "{{ git_mail }}"
+      when: not "'mail' in config.stdout"
 
     - name: git config user
-      shell: etckeeper vcs config --global user.name "{{ git_user }}"
-      when: not "{{ git_user }} in config.stdout"
+      command: etckeeper vcs config --global user.name "{{ git_user }}"
+      when: not "'name' in config.stdout"
 
     - name: etckeeper add files
-      shell: etckeeper vcs add .
-      when: etckeeper.stdout.find("Untracked") != -1
+      command: etckeeper vcs add .
+      #when: etckeeper.stdout.find("Untracked") != -1
+      when: "'Untracked' in etckeeper.stdout or 'Changes not staged for commit' in etckeeper.stdout"
 
     - name: commit etckeeper
-      shell: etckeeper vcs commit -am "commit changes by ansible"
-      when: not "'clean' in etckeeper.stdout"
+      command: etckeeper vcs commit -am "commit changes by ansible"
+      when: "'Changes not staged for commit' in etckeeper.stdout"

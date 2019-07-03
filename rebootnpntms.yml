@@ -42,3 +42,4 @@
       service:
         name: wildfly
         state: restarted
+      when: reboot is changed

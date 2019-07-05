@@ -1,0 +1,5 @@
+- hosts: all
+  become: yes
+  roles:
+    - role: kmonticolo.ansible_role_vmwaretools
+      when: ansible_virtualization_type == 'VMware'

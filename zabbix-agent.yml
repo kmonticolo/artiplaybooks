@@ -3,8 +3,8 @@
 - hosts: all
   become: yes
   vars: 
-    zabbix_agent_server: 127.0.0.1,miki.artifact.pl,164.132.63.48
-    zabbix_agent_serveractive: 127.0.0.1,miki.artifact.pl,164.132.63.48
+    zabbix_agent_server: miki.artifact.pl,164.132.63.48
+    zabbix_agent_serveractive: miki.artifact.pl,164.132.63.48
     sign_keys: 40
     zabbix_version: 4.0
   roles:

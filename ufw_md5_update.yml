@@ -1,0 +1,44 @@
+---
+
+- hosts: artifactubuntu, novelpayubuntu
+  vars:
+    ufw_file: /etc/ufw/user.rules
+  gather_facts: false
+  tasks:
+  - name: Get actual checksum
+    #command: md5sum /etc/ufw/user.rules
+    command: "md5sum {{ ufw_file }}"
+    register: ufwmd5
+    become: true
+    changed_when: no
+
+  - debug:
+      msg: "{{ ufwmd5.stdout.split(' ')[0] | lower }}"
+
+  - name: Check if change is needed
+    lineinfile:
+      path: '/home/kmonti/tests/test_{{ ansible_nodename.split(".")[0] | lower }}.py'
+      #line: "    assert command.stdout.rstrip() == \'{{ ufwmd5.stdout.split(' ')[0] | lower }}  /etc/ufw/user.rules\'"
+      line: "    assert command.stdout.rstrip() == \'{{ ufwmd5.stdout.split(' ')[0] | lower }}  {{ ufw_file }}\'"
+      state: present
+    check_mode: yes
+    register: conf
+    delegate_to: localhost
+    
+  - name: Run etckeeper vcs diff when change occurs
+    command: "etckeeper vcs diff {{ ufw_file }}"
+    register: etckeeper
+    when: conf.changed
+    become: true
+
+  - debug:
+      msg: "{{ etckeeper.stdout }}"
+    when: conf.changed
+
+  - name: Change checksum when needed
+    lineinfile:
+      path: '/home/kmonti/tests/test_{{ ansible_nodename.split(".")[0] | lower }}.py'
+      regexp: '    assert command.stdout.rstrip.*{{ ufw_file }}.'
+      line: "    assert command.stdout.rstrip() == \'{{ ufwmd5.stdout.split(' ')[0] | lower }}  {{ ufw_file }}\'"
+    when: conf.changed
+    delegate_to: localhost

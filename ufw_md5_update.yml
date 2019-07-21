@@ -6,7 +6,6 @@
   gather_facts: false
   tasks:
   - name: Get actual checksum
-    #command: md5sum /etc/ufw/user.rules
     command: "md5sum {{ ufw_file }}"
     register: ufwmd5
     become: true
@@ -18,7 +17,6 @@
   - name: Check if change is needed
     lineinfile:
       path: '/home/kmonti/tests/test_{{ ansible_nodename.split(".")[0] | lower }}.py'
-      #line: "    assert command.stdout.rstrip() == \'{{ ufwmd5.stdout.split(' ')[0] | lower }}  /etc/ufw/user.rules\'"
       line: "    assert command.stdout.rstrip() == \'{{ ufwmd5.stdout.split(' ')[0] | lower }}  {{ ufw_file }}\'"
       state: present
     check_mode: yes

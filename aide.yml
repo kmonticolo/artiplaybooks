@@ -136,19 +136,19 @@
            - "/opt/ntms/logs/ntms.log.*" # wildfly
            - "/opt/ntms/logs/sql.log" # wildfly
            - "/opt/ntms/logs"
-
            - "/opt/wildfly-15.0.0.Final/standalone/log/*"
            - "/var/log/postgresql/postgresql-10-main.log.*" # postgresql
            - "/var/log/nginx/"
-           - "/var/log/nginx/access.*"
-           - "/var/log/nginx/error.*"
-           - "/var/log/nginx/ntms_access.log.*"
-           - "/var/log/nginx/ntms_error.*"
-           - "/var/log/nginx/ntms_term_access.*"
-           - "/var/log/nginx/ntms_term_error.*"
-           - "/opt/ntms/logs/sql.log"
+           - "/var/log/nginx/access.*.log"
+           - "/var/log/nginx/error.*.log"
+           - "/var/log/nginx/ntms_access.log.*.log"
+           - "/var/log/nginx/ntms_error.*.log"
+           - "/var/log/nginx/ntms_term_access.*.log"
+           - "/var/log/nginx/ntms_term_error.*.log"
+           - "/opt/ntms/logs/sql.log.log"
            - "/opt/wildfly-15.0.0.Final/standalone/log"
            - "/opt/wildfly-15.0.0.Final/standalone/log/server.log"
+           - "/var/log/auth.log"
  
 
       - name: "exclude"
@@ -168,6 +168,13 @@
            - "/opt/ntms/data/t/parameterTmp/*"
            - "/opt/ntms/data/t/export"
            - "/opt/ntms/data/t/upload"
+           - "/var/log/auth.log.*.gz"
+           - "/var/log/nginx/access.log.*.gz"
+           - "/var/log/nginx/error.log.*.gz"
+           - "/var/log/nginx/ntms_access.log.*.gz"
+           - "/var/log/nginx/ntms_error.log.*.gz"
+           - "/var/log/nginx/ntms_term_access.log.*.gz"
+           - "/var/log/nginx/ntms_term_error.log.*.gz"
 
   roles:
     - kmonticolo.ansible_aide

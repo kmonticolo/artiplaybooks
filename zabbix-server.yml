@@ -1,5 +1,26 @@
 ---
-- hosts: zabbix-server
+- hosts: miki.artifact.pl
   become: yes
+  vars:
+    zabbix_server_mysql_login_host: localhost
+    zabbix_server_mysql_login_user: zabbix
+    zabbix_server_mysql_login_password: zabbix
+    database_type: mysql
+    #database_type: pgsql
+    database_type_long: mysql
+    #database_type_long: postgresql
+    zabbix_version: 4.0
+
+    zabbix_url: miki.artifact.pl
+
+
+    server_dbuser: zabbix
+
+    server_dbpassword: zabbix
   roles:
-     - { role: dj-wasabi.zabbix-server, database_type: mysql, database_type_long: mysql }
+
+    - role: geerlingguy.mysql
+    #- role: geerlingguy.postgresql
+
+    - role: dj-wasabi.zabbix-server
+    - role: dj-wasabi.zabbix-web

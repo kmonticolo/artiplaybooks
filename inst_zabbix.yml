@@ -1,6 +1,58 @@
 ---
 - hosts: miki.artifact.pl
   become: yes
+  vars:
+  # mysql
+    mysql_bind_address: '127.0.0.1'
+    mysql_root_name: root
+    mysql_root_password: tajne
+    mysql_databases:
+      - name: zabbix
+    mysql_users:
+      - name: zabbix
+        host: "%"
+        password: zabbix
+        priv: "zabbix.*:ALL"
+  # zabbix
+    zabbix_server_mysql_login_user: "{{ mysql_root_name }}"
+    zabbix_server_mysql_login_password: "{{ mysql_root_password }}"
+    zabbix_server_mysql_login_unix_socket: /var/run/mysqld/mysqld.sock
+    zabbix_server_dbname: zabbix
+    zabbix_server_dbuser: zabbix
+    zabbix_server_dbpassword: zabbix
+    zabbix_server_database: mysql
+    zabbix_server_database_long: mysql
+    zabbix_database_creation: False
+    zabbix_database_sqlload: True
+    # vhost
+    apache_vhosts:
+      - {servername: "miki.artifact.pl", serveralias: "/zabbix", documentroot: "/usr/share/zabbix"}
   roles:
-     - { role: dj-wasabi.zabbix-server, database_type: mysql, database_type_long: mysql, zabbix_server_mysql_login_user: zabbix, zabbix_server_mysql_login_password: zabbix }
-     - { role: dj-wasabi.zabbix-web, database_type: mysql, database_type_long: mysql, zabbix_server_mysql_login_user: zabbix, zabbix_server_mysql_login_password: zabbix }
+    - {role: geerlingguy.mysql, tags: mysql}
+    - {role: dj-wasabi.zabbix-server}
+    - {role: geerlingguy.apache}
+    - {role: dj-wasabi.zabbix-web, database_type: mysql, database_type_long: mysql, zabbix_server_mysql_login_user: zabbix, zabbix_server_mysql_login_password: zabbix}
+
+- hosts: all
+  vars:
+    zabbix_api_create_hostgroup: True
+    zabbix_api_create_hosts: True
+    zabbix_install_pip_packages: True
+  roles:
+    - role: dj-wasabi.zabbix-agent
+       zabbix_agent_server: miki.artifact.pl
+       zabbix_agent_serveractive:  miki.artifact.pl
+       zabbix_url: "http://miki.artifact.pl/zabbix"
+       zabbix_api_use: true 
+       zabbix_api_user: Admin
+       zabbix_api_pass: haqL39Ue48JqR8rB
+       zabbix_create_host: present
+       zabbix_host_groups:
+         - Linux Servers
+       zabbix_link_templates:
+         - Template OS Linux
+         #- Apache APP Template
+       #zabbix_macros:
+         #- macro_key: apache_type 
+         #macro_value: reverse_proxy
+  tags: agent

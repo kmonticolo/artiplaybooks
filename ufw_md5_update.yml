@@ -1,6 +1,6 @@
 ---
 
-- hosts: artifactubuntu, novelpayubuntu
+- hosts: artifactubuntu, novelpayubuntu, npntms
   vars:
     ufw_file: /etc/ufw/user.rules
   gather_facts: false

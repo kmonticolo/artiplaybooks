@@ -1,4 +1,4 @@
-- hosts: centos
+- hosts: centos:!ppos.novelpay.pl
   become: True
   roles:
      - giovtorres.yum-cron

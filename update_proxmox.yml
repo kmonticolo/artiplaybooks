@@ -1,0 +1,5 @@
+---
+- hosts: npproxmox
+  become: yes
+  roles:
+    - /home/kmonti/ansible/proxmox5to6

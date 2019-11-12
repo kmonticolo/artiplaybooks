@@ -1,0 +1,70 @@
+---
+# tasks file for proxmox5to6
+# https://pve.proxmox.com/wiki/Upgrade_from_5.x_to_6.0#Continuously_use_the_pve5to6_checklist_script
+
+- name: Update packages list
+  apt: 
+    update_cache: yes
+  when: ansible_os_family == 'Debian'
+
+- name: Update all packages to the latest version
+  apt:
+    upgrade: dist
+
+- name: Perform checklist pve5to6
+  command: /usr/bin/pve5to6
+  changed_when: false
+  register: pve5to6
+
+- name: Ensure pve-ha-lrm service is stopped
+  service:
+    name: pve-ha-lrm
+    state: stopped
+
+- name: Ensure pve-ha-crm service is stopped
+  service:
+    name: pve-ha-crm
+    state: stopped
+
+- name: Add apt repository
+  apt_repository:
+    repo: deb http://download.proxmox.com/debian/corosync-3/ stretch main
+    state: present
+    filename: corosync3
+
+- name: Update packages list
+  apt: update_cache=yes
+  when: ansible_os_family == 'Debian'
+
+- name: Update all packages to the latest version
+  apt:
+    upgrade: dist
+
+- name: Ensure pve-ha-lrm service is started
+  service:
+    name: pve-ha-lrm
+    state: started
+
+- name: Ensure pve-ha-crm service is started
+  service:
+    name: pve-ha-crm
+    state: started
+
+- name: Update all Debian repository entries to Buster 1/2
+  copy: 
+    src: files/sources.list
+    dest: /etc/apt/sources.list
+
+- name: Update all Debian repository entries to Buster 2/2
+  copy: 
+    src: files/pve-install-repo.list
+    dest: /etc/apt/sources.list.d/pve-install-repo.list
+
+- name: Update packages list
+  apt: update_cache=yes
+  when: ansible_os_family == 'Debian'
+
+- name: Update all packages to the latest version
+  apt:
+    upgrade: dist
+

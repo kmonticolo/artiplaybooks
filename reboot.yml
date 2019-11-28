@@ -1,7 +1,7 @@
 ---
 
 #- hosts: all
-- hosts: ubuntu
+- hosts: ubuntu:!agat.artifarct.pl
   become: yes
   serial: 1
   gather_facts: no

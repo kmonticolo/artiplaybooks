@@ -3,6 +3,7 @@
 - hosts: artifactubuntu, novelpayubuntu, npntms
   vars:
     ufw_file: /etc/ufw/user.rules
+    ufw_path: '/home/kmonti/tests/test_{{ ansible_nodename.split(".")[0] | lower }}.py'
   gather_facts: false
   tasks:
   - name: Get actual checksum
@@ -11,12 +12,12 @@
     become: true
     changed_when: no
 
-  - debug:
-      msg: "{{ ufwmd5.stdout.split(' ')[0] | lower }}"
+  #- debug:
+      #msg: "{{ ufwmd5.stdout.split(' ')[0] | lower }}"
 
   - name: Check if change is needed
     lineinfile:
-      path: '/home/kmonti/tests/test_{{ ansible_nodename.split(".")[0] | lower }}.py'
+      path: "{{ ufw_path }}"
       line: "    assert command.stdout.rstrip() == \'{{ ufwmd5.stdout.split(' ')[0] | lower }}  {{ ufw_file }}\'"
       state: present
     check_mode: yes
@@ -35,7 +36,7 @@
 
   - name: Change checksum when needed
     lineinfile:
-      path: '/home/kmonti/tests/test_{{ ansible_nodename.split(".")[0] | lower }}.py'
+      path: "{{ ufw_path }}"
       regexp: '    assert command.stdout.rstrip.*{{ ufw_file }}.'
       line: "    assert command.stdout.rstrip() == \'{{ ufwmd5.stdout.split(' ')[0] | lower }}  {{ ufw_file }}\'"
     when: conf.changed

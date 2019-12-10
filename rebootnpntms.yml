@@ -17,11 +17,9 @@
       when: ansible_os_family == 'Debian'
 
     - name: Reboot immediately if there was a change.
-      #serial: 1
       shell: "sleep 3 && reboot"
       async: 1
       poll: 0
-      #shell: "ls"
       when: reboot is changed
 
     - name: Wait for the reboot to complete if there was a change.
@@ -42,4 +40,5 @@
       service:
         name: wildfly
         state: restarted
+      tags: wf
       when: reboot is changed

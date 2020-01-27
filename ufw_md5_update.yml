@@ -5,6 +5,7 @@
     name: '{{ ansible_nodename.split(".")[0] | lower }}'
     ufw_file: /etc/ufw/user.rules
     ufw_path: '/home/kmonti/tests/test_{{ name }}.py'
+    ufw_line: "    assert command.stdout.rstrip() == \'{{ ufwmd5.stdout.split(' ')[0] | lower }}  {{ ufw_file }}\'"
   gather_facts: false
 
   tasks:
@@ -17,7 +18,7 @@
   - name: Check if change is needed
     lineinfile:
       path: "{{ ufw_path }}"
-      line: "    assert command.stdout.rstrip() == \'{{ ufwmd5.stdout.split(' ')[0] | lower }}  {{ ufw_file }}\'"
+      line: "{{ ufw_line }}"
       state: present
     check_mode: yes
     register: conf
@@ -38,6 +39,6 @@
     lineinfile:
       path: "{{ ufw_path }}"
       regexp: '    assert command.stdout.rstrip.*{{ ufw_file }}.'
-      line: "    assert command.stdout.rstrip() == \'{{ ufwmd5.stdout.split(' ')[0] | lower }}  {{ ufw_file }}\'"
+      line: "{{ ufw_line }}"
     when: conf.changed
     delegate_to: localhost

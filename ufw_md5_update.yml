@@ -2,9 +2,11 @@
 
 - hosts: artifactubuntu, novelpayubuntu, npntms
   vars:
+    name: '{{ ansible_nodename.split(".")[0] | lower }}'
     ufw_file: /etc/ufw/user.rules
-    ufw_path: '/home/kmonti/tests/test_{{ ansible_nodename.split(".")[0] | lower }}.py'
+    ufw_path: '/home/kmonti/tests/test_{{ name }}.py'
   gather_facts: false
+
   tasks:
   - name: Get actual checksum
     command: "md5sum {{ ufw_file }}"

@@ -12,9 +12,6 @@
     become: true
     changed_when: no
 
-  #- debug:
-      #msg: "{{ ufwmd5.stdout.split(' ')[0] | lower }}"
-
   - name: Check if change is needed
     lineinfile:
       path: "{{ ufw_path }}"

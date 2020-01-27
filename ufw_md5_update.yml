@@ -28,6 +28,7 @@
     register: etckeeper
     when: conf.changed
     become: true
+    changed_when: no
 
   - debug:
       msg: "{{ etckeeper.stdout }}"

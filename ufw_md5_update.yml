@@ -2,9 +2,9 @@
 
 - hosts: artifactubuntu, novelpayubuntu, npntms
   vars:
-    name: '{{ ansible_nodename.split(".")[0] | lower }}'
+    nodename: '{{ ansible_nodename.split(".")[0] | lower }}'
     ufw_file: /etc/ufw/user.rules
-    ufw_path: '/home/kmonti/tests/test_{{ name }}.py'
+    ufw_path: '/home/kmonti/tests/test_{{ nodename }}.py'
     ufw_line: "    assert command.stdout.rstrip() == \'{{ ufwmd5.stdout.split(' ')[0] | lower }}  {{ ufw_file }}\'"
   gather_facts: false
 

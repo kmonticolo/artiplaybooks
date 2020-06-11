@@ -3,6 +3,12 @@
 - hosts: all:!agat.artifact.pl
   become: yes
   tasks:
+    - name: ubuntu | ensuring Ubuntu universe repo is enabled ({{ ansible_distribution_version }} >= 16.04)
+      apt_repository:
+        repo: "deb http://us.archive.ubuntu.com/ubuntu {{ ansible_distribution_release|lower }} universe"
+        state: present
+      when: ansible_distribution_version >= '16.04'
+
     - name: Autoremove packages
       apt: autoremove=yes
       when: ansible_os_family == 'Debian'

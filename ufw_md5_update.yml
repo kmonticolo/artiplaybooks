@@ -5,7 +5,7 @@
     nodename: '{{ ansible_nodename.split(".")[0] | lower }}'
     ufw_file: /etc/ufw/user.rules
     ufw_path: '/home/kmonti/tests/test_{{ nodename }}.py'
-    ufw_line: "    assert command.stdout.rstrip() == \'{{ ufwmd5.stdout.split(' ')[0] | lower }}  {{ ufw_file }}\'"
+    ufw_line: "    assert command.stdout.rstrip() == '{{ ufwmd5.stdout.split(' ')[0] | lower }}  {{ ufw_file }}'"
   gather_facts: false
 
   tasks:
@@ -23,7 +23,7 @@
     check_mode: yes
     register: conf
     delegate_to: localhost
-    
+
   - name: Run etckeeper vcs diff when change occurs
     command: "etckeeper vcs diff {{ ufw_file }}"
     register: etckeeper
@@ -40,5 +40,48 @@
       path: "{{ ufw_path }}"
       regexp: '    assert command.stdout.rstrip.*{{ ufw_file }}.'
       line: "{{ ufw_line }}"
+    when: conf.changed
+    delegate_to: localhost
+
+- hosts: artifactcentos, novelpaycentos:!ppos.novelpay.pl
+  vars:
+    nodename: '{{ ansible_nodename.split(".")[0] | lower }}'
+    firewall_file: /etc/firewalld/zones/public.xml
+    firewall_path: '/home/kmonti/tests/test_{{ nodename }}.py'
+    firewall_line: "    assert command.stdout.rstrip() == '{{ firewallmd5.stdout.split(' ')[0] | lower }}  {{ firewall_file }}'"
+  gather_facts: false
+
+  tasks:
+  - name: Get actual checksum
+    command: "md5sum {{ firewall_file }}"
+    register: firewallmd5
+    become: true
+    changed_when: no
+
+  - name: Check if change is needed
+    lineinfile:
+      path: "{{ firewall_path }}"
+      line: "{{ firewall_line }}"
+      state: present
+    check_mode: yes
+    register: conf
+    delegate_to: localhost
+
+  - name: Run etckeeper vcs diff when change occurs
+    command: "etckeeper vcs diff {{ firewall_file }}"
+    register: etckeeper
+    when: conf.changed
+    become: true
+    changed_when: no
+
+  - debug:
+      msg: "{{ etckeeper.stdout }}"
+    when: conf.changed
+
+  - name: Change checksum when needed
+    lineinfile:
+      path: "{{ firewall_path }}"
+      regexp: '    assert command.stdout.rstrip.*{{ firewall_file }}.'
+      line: "{{ firewall_line }}"
     when: conf.changed
     delegate_to: localhost

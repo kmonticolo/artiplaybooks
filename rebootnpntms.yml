@@ -11,8 +11,8 @@
     - name: is reboot needed
       stat:
         path: /var/run/reboot-required
-      register: reboot 
-      changed_when: reboot.stat.exists == True
+      register: reboot
+      changed_when: reboot.stat.exists
       when: ansible_os_family == 'Debian'
 
     - name: Reboot immediately if there was a change.

@@ -1,7 +1,6 @@
 ---
 
-#- hosts: all
-- hosts: artifactubuntu,novelpayubuntu:!agat.artifact.pl
+- hosts: artifactubuntu,novelpayubuntu:!agat.artifact.pl,!miki.artifact.pl
   become: yes
   serial: 1
   gather_facts: no

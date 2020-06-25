@@ -1,4 +1,11 @@
 - hosts: all
   become: yes
+  vars:
+    etckeeper__gitignore_group:
+    - 'shadow'
+    - 'shadow-'
+    - 'systemd/system/multi-user.target.wants/snap-core-*'
+    - 'systemd/system/snap-core-*'
+
   roles:
     - debops-contrib.etckeeper

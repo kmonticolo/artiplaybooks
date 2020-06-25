@@ -26,7 +26,7 @@
       register: reboot_hint
 
     - name: Rebooting ...
-      command: sleep 5 && shutdown -r now "Reboot required for updated kernel"
+      shell: sleep 5 && shutdown -r now "Reboot required for updated kernel"
       async: 0
       poll: 0
       ignore_errors: true

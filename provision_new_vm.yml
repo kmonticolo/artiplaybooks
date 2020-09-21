@@ -1,0 +1,8 @@
+- include: debian_upgrade.yml
+- include: etckeeper.yml
+- include: fail2ban.yml
+- include: zabbix-agent.yml
+- include: ipv6_disable.yml
+- include: vmtools.yml
+- include: ntp.yml
+- include: unattended-upgrades.yml

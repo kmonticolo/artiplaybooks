@@ -1,0 +1,6 @@
+---
+- hosts: proxmox
+  gather_facts: false
+  become: yes
+  roles:
+    - /home/kmonti/ansible/proxmox-autosnap

@@ -1,0 +1,39 @@
+---
+- hosts: npzabbix
+  become: yes
+  vars:
+    zabbix_server_mysql_login_host: localhost
+    zabbix_server_mysql_login_user: zabbix
+    zabbix_server_mysql_login_password: zabbix
+    zabbix_server_dbhost: localhost
+    zabbix_server_dbuser: zabbix
+    zabbix_server_dbpassword: zabbix
+    zabbix_server_database: mysql
+    zabbix_server_database_long: mysql
+    zabbix_version: 4.0
+
+    zabbix_url: 178.32.253.4
+
+  pre_tasks:
+    - name: Make sure pip is present
+      become: true
+      apt:
+        name: python3-pip
+        state: present
+      
+    - name: Make sure pymysql is present
+      become: true # needed if the other tasks are not played as root
+      pip:
+        name: pymysql
+        state: present
+  roles:
+
+    - role: geerlingguy.mysql
+mysql_user_home: /root
+mysql_user_name: root
+mysql_user_password: root
+
+    #- role: geerlingguy.postgresql
+
+    - role: dj-wasabi.zabbix-server
+    - role: dj-wasabi.zabbix-web

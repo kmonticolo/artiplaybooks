@@ -1,0 +1,11 @@
+---
+# handlers file for role-zabbix-agent-md
+#
+
+- name: restart zabbix-agent
+  service:
+    name: zabbix-agent
+    state: restarted
+    enabled: yes
+  become: yes
+

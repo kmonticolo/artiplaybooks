@@ -1,0 +1,40 @@
+---
+# tasks file for proxmox-autosnap
+- name: Download pve-autosnap binary
+  get_url:
+    url: "{{ url }}"
+    dest: /bin/pve-autosnap
+    mode: 0755
+
+- name: Check for storage
+  shell: pvesm status | sed 1d | tail -1 | awk '{ print $1 }'
+  register: storage
+  changed_when: false
+
+- name: Set daily crontab
+  cron:
+    name: "Daily snapshot"
+    weekday: "1-6"
+    minute: "0"
+    hour: "3"
+    job: "/bin/pve-autosnap --daily --storage {{ storage.stdout }} --leave 3"
+  when: storage is defined and storage
+
+- name: Set weekly crontab
+  cron:
+    name: "Weekly snapshot"
+    weekday: "7"
+    minute: "0"
+    hour: "3"
+    job: "/bin/pve-autosnap --weekly --storage {{ storage.stdout }} --leave 3"
+  when: storage is defined and storage
+
+- name: Set monthly crontab
+  cron:
+    name: "Monthly snapshot"
+    day: "1"
+    month: "*"
+    minute: "0"
+    hour: "4"
+    job: "/bin/pve-autosnap --monthly --storage {{ storage.stdout }} --leave 4"
+  when: storage is defined and storage

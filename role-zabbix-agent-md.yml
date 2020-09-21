@@ -1,0 +1,9 @@
+---
+- name: zabbbix agent configuration
+  hosts: all
+  gather_facts: false
+  become: true
+
+  roles:
+    - { role: role-zabbix-agent-md }
+ 

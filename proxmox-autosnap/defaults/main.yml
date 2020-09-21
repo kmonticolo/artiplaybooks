@@ -1,0 +1,3 @@
+---
+# defaults file for proxmox-autosnap
+url: https://raw.githubusercontent.com/kvaps/pve-autosnap/master/pve-autosnap

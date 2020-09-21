@@ -1,0 +1,28 @@
+---
+# tasks file for role-zabbix-agent-md
+# based on https://github.com/krom/zabbix_template_md
+  - name: Check for mdstat entries
+    find:
+      paths: /proc
+      patterns: mdstat
+      contains: '^md[0-9]'
+    register: find_md
+  
+  - name: Copy md file
+    copy:
+      src: files/userparameter_md.conf
+      dest:  /etc/zabbix/zabbix_agentd.d/
+    when: find_md.matched > 0
+    notify:
+      - restart zabbix-agent
+
+# disk stat
+  - name: Copy disk stat 
+    copy:
+      src: files/Disk_Stat.conf
+      dest:  /etc/zabbix/zabbix_agentd.d/
+    notify:
+      - restart zabbix-agent
+
+  - name: Flush handlers
+    meta: flush_handlers

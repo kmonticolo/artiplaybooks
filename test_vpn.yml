@@ -1,0 +1,32 @@
+---
+- hosts: vpnpc
+  gather_facts: no
+  tasks:
+
+  - name: Check if vpnpc is working
+    command: ls
+    changed_when: no
+
+  - name: Wait for pep ssh port
+    wait_for:
+      port: 22
+      host: 10.202.23.3
+      search_regex: OpenSSH
+      timeout: 15
+    register: ssh
+    ignore_errors: yes
+
+- hosts: edgerouter
+  gather_facts: no
+  tasks:
+
+  - name: print date to log when ssh is unreachable
+    shell: 'date >> /home/kmonti/pep_vpn_restart.txt'
+    when: hostvars['hvpnpc']['ssh'].failed
+    delegate_to: localhost
+
+  - name: restart ipsec
+    command: ipsec restart
+    #command: ls
+    become: yes
+    when: hostvars['hvpnpc']['ssh'].failed
